@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.newseventproject;
-import org.json.JSONObject;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 
 /**
  *
@@ -13,22 +15,33 @@ public class Main {
     
     public static void main(String[] args)
     {
-        //check that the json library is available
-        JSONObject test = new JSONObject();
-        test.put("message", "JSON library works");
-        System.out.println(test.getString("message"));
-        
-        //check that the SQLite driver is availabe
-        
-        try 
+        Connection connection = null;
+        try
         {
-            Class.forName("org.sqlite.JDBC");
-            System.out.println("SQLite driver found");
+            //try to open the database
+            connection = DatabaseConnection.getConnection();
+            System.out.println("Connected to SQLite database");
             
         }
-        catch (ClassNotFoundException hiba)
+        catch (SQLException hiba)
         {
-            System.out.println("SQLite driver not found:" + hiba.getMessage());
+            System.out.println("Connection failed: " + hiba.getMessage());
+        }
+        finally
+        {
+            //always close the connection, even if an error happened 
+            try
+            {
+                if (connection != null)
+                {
+                    connection.close();
+                    System.out.println("Connection closed");
+                }
+                
+            } catch(SQLException hiba)
+            {
+                System.out.println("Could not close connection: " + hiba.getMessage());
+            }
         }
     }
 }
